@@ -6,19 +6,22 @@ from Crypto.Util import Counter
 class AES_CIPHER_CBC:
 
     BLOCK_SIZE_AES = 16 # AES: Bloque de 128 bits
-
+    
     def __init__(self, key):
         """Inicializa las variables locales"""
+        self.key = get_random_bytes(8)
 
     def cifrar(self, cadena, IV):
         """Cifra el parámetro cadena (de tipo String) con una IV específica, y 
            devuelve el texto cifrado binario"""
-        return None
+        cipher_aes = AES.new(key, AES.MODE_CBC, IV)
+        return cipher_aes.encrypt(pad(cadena.encode("utf-8"), self.BLOCK_SIZE_AES))
 
     def descifrar(self, cifrado, IV):
         """Descifra el parámetro cifrado (de tipo binario) con una IV específica, y 
            devuelve la cadena en claro de tipo String"""
-        return None
+        decipher_aes = AES.new(key, AES.MODE_CBC, IV)
+        return unpad(decipher_aes.decrypt(cifrado), self.BLOCK_SIZE_AES).decode("utf-8", "ignore")
 
 key = get_random_bytes(16) # Clave aleatoria de 128 bits
 IV = get_random_bytes(16)  # IV aleatorio de 128 bits
