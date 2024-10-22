@@ -12,3 +12,12 @@ socket_servidor.escuchar()
 cifrado = socket_servidor.recibir()
 firmado = socket_servidor.recibir()
 socket_servidor.cerrar()
+
+#DESCIFRAR
+descifrado = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
+print(descifrado)
+try:
+	funciones_rsa.comprobarRSA_PSS(cifrado, firmado, alice_pub_key)
+	print("Firma correcta")
+except(ValueError, TypeError):
+	print("Fallo en la firma")
