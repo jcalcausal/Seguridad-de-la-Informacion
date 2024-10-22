@@ -11,4 +11,4 @@ socket_servidor = SOCKET_SIMPLE_TCP("127.0.0.1", 1337)
 socket_servidor.escuchar()
 cifrado = socket_servidor.recibir()
 firmado = socket_servidor.recibir()
-
+socket_servidor.cerrar()
