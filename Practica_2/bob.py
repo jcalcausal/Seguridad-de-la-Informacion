@@ -13,21 +13,11 @@ cifrado = socket_servidor.recibir()
 firmado = socket_servidor.recibir()
 socket_servidor.cerrar()
 
-<<<<<<< HEAD
 #DESCIFRAR Y VERIFICAR FIRMA
-=======
-#DESCIFRAR
->>>>>>> ca1bb0e2a933476facf7cfa613c902082537faa7
 descifrado = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
 print(descifrado)
 try:
 	funciones_rsa.comprobarRSA_PSS(cifrado, firmado, alice_pub_key)
-<<<<<<< HEAD
 	print("Verificación de la firma correcta")
 except(ValueError, TypeError):
 	print("Verificación incorrecta de la firma")
-=======
-	print("Firma correcta")
-except(ValueError, TypeError):
-	print("Fallo en la firma")
->>>>>>> ca1bb0e2a933476facf7cfa613c902082537faa7
