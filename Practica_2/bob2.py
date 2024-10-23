@@ -23,7 +23,7 @@ try:
 except(ValueError, TypeError):
 	print("Verificación incorrecta de la firma")
 
-#EJERCICIO 2
+#EJERCICIO 2.b
 cipher, IV = funciones_aes.iniciarAES_CTR_cifrado(clave)
 mensaje = "Hola Alice".encode("utf-8")
 cifrado2 = funciones_aes.cifrarAES_CTR(cipher, mensaje)

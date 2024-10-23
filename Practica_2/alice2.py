@@ -20,7 +20,7 @@ socket_client.conectar()
 socket_client.enviar(cifrado)
 socket_client.enviar(firmado)
 
-#EJERCICIO 2
+#EJERCICIO 2.b
 IV = socket_client.recibir()
 cifrado2 = socket_client.recibir()
 firmado2 = socket_client.recibir()
