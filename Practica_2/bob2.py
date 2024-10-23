@@ -15,13 +15,22 @@ cifrado = socket_servidor.recibir()
 firmado = socket_servidor.recibir()
 
 #DESCIFRAR Y VERIFICAR FIRMA
-descifrado = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
-print(descifrado)
+clave = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
+print(clave)
 try:
 	funciones_rsa.comprobarRSA_PSS(cifrado, firmado, alice_pub_key)
 	print("Verificación de la firma correcta")
 except(ValueError, TypeError):
 	print("Verificación incorrecta de la firma")
+
+#EJERCICIO 2
+cipher, IV = funciones_aes.iniciarAES_CTR_cifrado(clave)
+mensaje = "Hola Alice".encode("utf-8")
+cifrado2 = funciones_aes.cifrarAES_CTR(cipher, mensaje)
+firmado2 = funciones_rsa.firmarRSA_PSS(cifrado2, bob_key)
+socket_servidor.enviar(IV)
+socket_servidor.enviar(cifrado2)
+socket_servidor.enviar(firmado2)
 
 #CERRAR SOCKET SERVIDOR
 socket_servidor.cerrar()

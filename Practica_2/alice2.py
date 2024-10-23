@@ -20,5 +20,17 @@ socket_client.conectar()
 socket_client.enviar(cifrado)
 socket_client.enviar(firmado)
 
+#EJERCICIO 2
+IV = socket_client.recibir()
+cifrado2 = socket_client.recibir()
+firmado2 = socket_client.recibir()
+try:
+	funciones_rsa.comprobarRSA_PSS(cifrado2, firmado2, bob_pub_key)
+	decipher = funciones_aes.iniciarAES_CTR_descifrado(k1, IV)
+	descifrado2 = funciones_aes.descifrarAES_CTR(decipher, cifrado2).decode("utf-8")
+	print(descifrado2)
+except(ValueError, TypeError):
+	print("Error en la verificación de la firma")
+
 #CERRAR SOCKET CLIENTE
 socket_client.cerrar()
