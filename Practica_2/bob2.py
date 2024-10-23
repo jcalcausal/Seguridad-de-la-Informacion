@@ -15,8 +15,8 @@ cifrado = socket_servidor.recibir()
 firmado = socket_servidor.recibir()
 
 #DESCIFRAR Y VERIFICAR FIRMA
-clave = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
-print(clave)
+k1 = funciones_rsa.descifrarRSA_OAEP(cifrado, bob_key)
+print(k1)
 try:
 	funciones_rsa.comprobarRSA_PSS(cifrado, firmado, alice_pub_key)
 	print("Verificación de la firma correcta")
@@ -24,13 +24,25 @@ except(ValueError, TypeError):
 	print("Verificación incorrecta de la firma")
 
 #EJERCICIO 2.b
-cipher, IV = funciones_aes.iniciarAES_CTR_cifrado(clave)
+cipher, IV = funciones_aes.iniciarAES_CTR_cifrado(k1)
 mensaje = "Hola Alice".encode("utf-8")
 cifrado2 = funciones_aes.cifrarAES_CTR(cipher, mensaje)
 firmado2 = funciones_rsa.firmarRSA_PSS(cifrado2, bob_key)
 socket_servidor.enviar(IV)
 socket_servidor.enviar(cifrado2)
 socket_servidor.enviar(firmado2)
+
+#EJERCICIO 2.c
+IV2 = socket_servidor.recibir()
+cifrado3 = socket_servidor.recibir()
+firmado3 = socket_servidor.recibir()
+try:
+	funciones_rsa.comprobarRSA_PSS(cifrado3, firmado3, alice_pub_key)
+	decipher = funciones_aes.iniciarAES_CTR_descifrado(k1, IV2)
+	descifrado = funciones_aes.descifrarAES_CTR(decipher, cifrado3).decode("utf-8")
+	print(descifrado)
+except(ValueError, TypeError):
+	print("Error al verificar la firma")
 
 #CERRAR SOCKET SERVIDOR
 socket_servidor.cerrar()

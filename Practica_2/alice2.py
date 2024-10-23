@@ -32,5 +32,15 @@ try:
 except(ValueError, TypeError):
 	print("Error en la verificación de la firma")
 
+#EJERCICIO 2.C
+
+cipher, IV2 = funciones_aes.iniciarAES_CTR_cifrado(k1)
+mensaje = "Hola Bob".encode("utf-8")
+cifrado3 = funciones_aes.cifrarAES_CTR(cipher, mensaje)
+firmado3 = funciones_rsa.firmarRSA_PSS(cifrado3, alice_key)
+socket_client.enviar(IV2)
+socket_client.enviar(cifrado3)
+socket_client.enviar(firmado3)
+
 #CERRAR SOCKET CLIENTE
 socket_client.cerrar()
