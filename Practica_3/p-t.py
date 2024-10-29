@@ -59,6 +59,7 @@ msg_BT.append(K1.hex())
 msg_BT.append(K2.hex())
 msg_BT.append(t_nb.hex())
 json_BT = json.dumps(msg_BT)
+print("T->B (Mensaje a enviar, descifrado): " + json_BT)
 
 #Ciframos el mensaje a enviar
 aes_engine = funciones_aes.iniciarAES_GCM(KBT)
