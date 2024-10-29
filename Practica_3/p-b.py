@@ -43,8 +43,19 @@ socket.enviar(cifrado_nonce)
 
 # Paso 2) T->B: KBT(K1, K2, Nb) en AES-GCM
 ##########################################
-
 # (A realizar por el alumno/a...)
+#Recibir el mensaje de Trent
+cifrado2 = socket.recibir()
+cifrado_mac2= socket.recibir()
+cifrado_nonce2 = socket.recibir()
+
+#DESCIFRAMOS LOS DATOS
+descifrado = funciones_aes.descifrarAES_GCM(KBT, cifrado_nonce2, cifrado2, cifrado_mac2)
+
+#Decodificar el contenido
+json_BT = descifrado.decode("utf-8" ,"ignore")
+print("T->B (descifrado): " + json_BT)
+msg_BT = json.loads(json_BT)
 
 # Cerramos el socket entre B y T, no lo utilizaremos mas
 socket.cerrar() 

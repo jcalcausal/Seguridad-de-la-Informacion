@@ -53,6 +53,21 @@ t_nb = bytearray.fromhex(t_nb)
 ##########################################
 
 # (A realizar por el alumno/a...)
+#Crear mensaje para mandar a Bob:
+msg_BT = []
+msg_BT.append(K1.hex())
+msg_BT.append(K2.hex())
+msg_BT.append(t_nb.hex())
+json_BT = json.dumps(msg_BT)
+
+#Ciframos el mensaje a enviar
+aes_engine = funciones_aes.iniciarAES_GCM(KBT)
+cifrado, cifrado_mac, cifrado_nonce = funciones_aes.cifrarAES_GCM(aes_engine,json_BT.encode("utf-8"))
+
+#Enviar datos a Bob
+socket_Bob.enviar(cifrado)
+socket_Bob.enviar(cifrado_mac)
+socket_Bob.enviar(cifrado_nonce)
 
 # Cerramos el socket entre B y T, no lo utilizaremos mas
 socket_Bob.cerrar() 
