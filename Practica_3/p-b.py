@@ -22,7 +22,7 @@ print("Creando conexion con T...")
 socket = SOCKET_SIMPLE_TCP('127.0.0.1', 5551)
 socket.conectar()
 
-# Crea los campos del mensaje
+# Crea el nonce para enviarselo a Trent
 t_n_origen = get_random_bytes(16)
 
 # Codifica el contenido (los campos binarios en una cadena) y contruyo el mensaje JSON
@@ -30,7 +30,7 @@ msg_TE = []
 msg_TE.append("Bob")
 msg_TE.append(t_n_origen.hex())
 json_ET = json.dumps(msg_TE)
-print("B -> T (descifrado): " + json_ET)
+print("1: Bob envía: B -> T (descifrado): " + json_ET)
 
 # Cifra los datos con AES GCM
 aes_engine = funciones_aes.iniciarAES_GCM(KBT)
@@ -45,6 +45,7 @@ socket.enviar(cifrado_nonce)
 ##########################################
 # (A realizar por el alumno/a...)
 #Recibir el mensaje de Trent
+print("Esperando las claves de Trent...")
 cifrado2 = socket.recibir()
 cifrado_mac2= socket.recibir()
 cifrado_nonce2 = socket.recibir()
@@ -54,8 +55,13 @@ descifrado = funciones_aes.descifrarAES_GCM(KBT, cifrado_nonce2, cifrado2, cifra
 
 #Decodificar el contenido
 json_BT = descifrado.decode("utf-8" ,"ignore")
-print("T->B (descifrado): " + json_BT)
+print("2: Bob recibe de Trent: T->B (descifrado): " + json_BT)
 msg_BT = json.loads(json_BT)
+k1_HEX, k2_HEX, t_n_recibido_HEX = msg_BT
+k1 = bytearray.fromhex(k1_HEX)
+k2 = bytearray.fromhex(k2_HEX)
+t_n_recibido = bytearray.fromhex(t_n_recibido_HEX)
+print ("k1: " + k1_HEX + " k2: " + k2_HEX + " nonce: " + t_n_recibido_HEX)
 
 # Cerramos el socket entre B y T, no lo utilizaremos mas
 socket.cerrar() 

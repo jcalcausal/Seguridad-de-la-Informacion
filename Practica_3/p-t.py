@@ -32,7 +32,7 @@ socket_Bob.escuchar()
 K1 = funciones_aes.crear_AESKey()
 K2 = funciones_aes.crear_AESKey()
 
-# Recibe el mensaje
+# Recibe el mensaje 1 de Bob, el cifrado, el mac y el nonce que produce AES_GCM
 cifrado = socket_Bob.recibir()
 cifrado_mac = socket_Bob.recibir()
 cifrado_nonce = socket_Bob.recibir()
@@ -41,9 +41,9 @@ cifrado_nonce = socket_Bob.recibir()
 datos_descifrado_ET = funciones_aes.descifrarAES_GCM(KBT, cifrado_nonce, cifrado, cifrado_mac)
 
 # Decodifica el contenido: Bob, Nb
-json_ET = datos_descifrado_ET.decode("utf-8" ,"ignore")
-print("B->T (descifrado): " + json_ET)
-msg_ET = json.loads(json_ET)
+json_ET = datos_descifrado_ET.decode("utf-8" ,"ignore") # Antes de enviar codificamos el JSON, hay q decodificarlo
+print("1: Trent recibe: B->T (descifrado): " + json_ET)
+msg_ET = json.loads(json_ET) # Recupera el array Python a partir del JSON
 
 # Extraigo el contenido
 t_bob, t_nb = msg_ET
@@ -54,21 +54,22 @@ t_nb = bytearray.fromhex(t_nb)
 
 # (A realizar por el alumno/a...)
 #Crear mensaje para mandar a Bob:
+print ("K1: " + K1.hex() + " K2: " + K2.hex() + " nonce: " + t_nb.hex())
 msg_BT = []
 msg_BT.append(K1.hex())
 msg_BT.append(K2.hex())
 msg_BT.append(t_nb.hex())
 json_BT = json.dumps(msg_BT)
-print("T->B (Mensaje a enviar, descifrado): " + json_BT)
+print("2: Tren envía a Bob: T->B (Mensaje a enviar, descifrado): " + json_BT)
 
 #Ciframos el mensaje a enviar
 aes_engine = funciones_aes.iniciarAES_GCM(KBT)
-cifrado, cifrado_mac, cifrado_nonce = funciones_aes.cifrarAES_GCM(aes_engine,json_BT.encode("utf-8"))
+cifrado2, cifrado_mac2, cifrado_nonce2 = funciones_aes.cifrarAES_GCM(aes_engine,json_BT.encode("utf-8"))
 
 #Enviar datos a Bob
-socket_Bob.enviar(cifrado)
-socket_Bob.enviar(cifrado_mac)
-socket_Bob.enviar(cifrado_nonce)
+socket_Bob.enviar(cifrado2)
+socket_Bob.enviar(cifrado_mac2)
+socket_Bob.enviar(cifrado_nonce2)
 
 # Cerramos el socket entre B y T, no lo utilizaremos mas
 socket_Bob.cerrar() 
