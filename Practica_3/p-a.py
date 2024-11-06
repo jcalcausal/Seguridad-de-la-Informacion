@@ -17,7 +17,7 @@ KAT = open("KAT.bin", "rb").read()
 
 # (A realizar por el alumno/a...)
 print("Creando conexion con T...")
-socket = SOCKET_SIMPLE_TCP('127.0.0.1', 5551)
+socket = SOCKET_SIMPLE_TCP('127.0.0.1', 5552)
 socket.conectar()
 
 # Crea el nonce para enviarselo a Trent

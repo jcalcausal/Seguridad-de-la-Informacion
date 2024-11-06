@@ -79,7 +79,7 @@ socket_Bob.cerrar()
 # (A realizar por el alumno/a...)
 
 print("Esperando a Alice...")
-socket_Alice = SOCKET_SIMPLE_TCP('127.0.0.1', 5551)
+socket_Alice = SOCKET_SIMPLE_TCP('127.0.0.1', 5552)
 socket_Alice.escuchar()
 
 # Recibe el mensaje 3 de Alice, el cifrado, el mac y el nonce que produce AES_GCM
