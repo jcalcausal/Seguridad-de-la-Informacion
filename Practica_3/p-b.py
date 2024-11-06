@@ -46,12 +46,12 @@ socket.enviar(cifrado_nonce)
 # (A realizar por el alumno/a...)
 #Recibir el mensaje de Trent
 print("Esperando las claves de Trent...")
-cifrado2 = socket.recibir()
-cifrado_mac2= socket.recibir()
-cifrado_nonce2 = socket.recibir()
+cifrado = socket.recibir()
+cifrado_mac= socket.recibir()
+cifrado_nonce = socket.recibir()
 
 #DESCIFRAMOS LOS DATOS
-descifrado = funciones_aes.descifrarAES_GCM(KBT, cifrado_nonce2, cifrado2, cifrado_mac2)
+descifrado = funciones_aes.descifrarAES_GCM(KBT, cifrado_nonce, cifrado, cifrado_mac)
 
 #Decodificar el contenido
 json_BT = descifrado.decode("utf-8" ,"ignore")

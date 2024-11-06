@@ -64,22 +64,61 @@ print("2: Tren envía a Bob: T->B (Mensaje a enviar, descifrado): " + json_BT)
 
 #Ciframos el mensaje a enviar
 aes_engine = funciones_aes.iniciarAES_GCM(KBT)
-cifrado2, cifrado_mac2, cifrado_nonce2 = funciones_aes.cifrarAES_GCM(aes_engine,json_BT.encode("utf-8"))
+cifrado, cifrado_mac, cifrado_nonce = funciones_aes.cifrarAES_GCM(aes_engine,json_BT.encode("utf-8"))
 
 #Enviar datos a Bob
-socket_Bob.enviar(cifrado2)
-socket_Bob.enviar(cifrado_mac2)
-socket_Bob.enviar(cifrado_nonce2)
+socket_Bob.enviar(cifrado)
+socket_Bob.enviar(cifrado_mac)
+socket_Bob.enviar(cifrado_nonce)
 
 # Cerramos el socket entre B y T, no lo utilizaremos mas
 socket_Bob.cerrar() 
 
 # Paso 3) A->T: KAT(Alice, Na) en AES-GCM
 #########################################
-
 # (A realizar por el alumno/a...)
+
+print("Esperando a Alice...")
+socket_Alice = SOCKET_SIMPLE_TCP('127.0.0.1', 5551)
+socket_Alice.escuchar()
+
+# Recibe el mensaje 3 de Alice, el cifrado, el mac y el nonce que produce AES_GCM
+cifrado = socket_Alice.recibir()
+cifrado_mac = socket_Alice.recibir()
+cifrado_nonce = socket_Alice.recibir()
+
+# Descifro los datos con AES GCM
+datos_descifrado_AT = funciones_aes.descifrarAES_GCM(KAT, cifrado_nonce, cifrado, cifrado_mac)
+
+# Decodifica el contenido: Alice, nonce_alice
+json_AT = datos_descifrado_AT.decode("utf-8" ,"ignore") # Antes de enviar codificamos el JSON, hay q decodificarlo
+print("3: Trent recibe: A->T (descifrado): " + json_AT)
+msg_AT = json.loads(json_AT) # Recupera el array Python a partir del JSON
+
+# Extraigo el contenido
+t_alice, t_na = msg_AT
+t_na = bytearray.fromhex(t_na)
 
 # Paso 4) T->A: KAT(K1, K2, Na) en AES-GCM
 ##########################################
-
 # (A realizar por el alumno/a...)
+# El mensaje a enviar a Alice es igual que el que enviamos a Bob, solo hay que cambiar el nonce
+ 
+msg_TA = []
+msg_TA.append(K1.hex())
+msg_TA.append(K2.hex())
+msg_TA.append(t_na.hex())
+json_TA = json.dumps(msg_TA)
+print("4: Tren envía a Alice: T->A (Mensaje a enviar, descifrado): " + json_TA)
+
+#Ciframos el mensaje a enviar
+aes_engine = funciones_aes.iniciarAES_GCM(KAT)
+cifrado, cifrado_mac, cifrado_nonce = funciones_aes.cifrarAES_GCM(aes_engine,json_TA.encode("utf-8"))
+
+#Enviar datos a Alice
+socket_Alice.enviar(cifrado)
+socket_Alice.enviar(cifrado_mac)
+socket_Alice.enviar(cifrado_nonce)
+
+# Cerramos el socket entre A y T, no lo utilizaremos mas
+socket_Alice.cerrar() 
