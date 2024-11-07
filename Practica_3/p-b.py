@@ -98,11 +98,51 @@ print ("Nombre recibido: " + mensaje_descifrado)
 
 # Paso 6) B->A: KAB(Apellido) en AES-CTR con HMAC
 #################################################
-
 # (A realizar por el alumno/a...)
+
+mensaje = "Alcausa"
+print("Apellido enviado: " + mensaje)
+cipher, nonce = funciones_aes.iniciarAES_CTR_cifrado(k1)
+mensaje_cifrado = funciones_aes.cifrarAES_CTR(cipher, mensaje.encode('utf-8'))
+
+hsend = HMAC.new(k2, mensaje_cifrado, digestmod=SHA256)
+hmac_enviado= hsend.digest()
+
+msg_BA = []
+msg_BA.append(mensaje_cifrado.hex())
+msg_BA.append(nonce.hex())
+msg_BA.append(hmac_enviado.hex())
+json_BA = json.dumps(msg_BA)
+print("6: Bob envía: B -> A: " + json_BA)
+
+socket.enviar(json_BA.encode("utf-8"))
 
 # Paso 7) A->B: KAB(END) en AES-CTR con HMAC
 ############################################
-
 # (A realizar por el alumno/a...)
+cifrado = socket.recibir()
 
+json_AB = cifrado.decode("utf-8", "ignore")
+print("5: Bob recibe de Alice: A->B (mensaje cifrado, nonce, hmac): " + json_AB)
+msg_AB = json.loads(json_AB)
+mensaje_cifrado_HEX, nonce_HEX, hmac_HEX = msg_AB
+
+mensaje_cifrado = bytearray.fromhex(mensaje_cifrado_HEX)
+nonce = bytearray.fromhex(nonce_HEX)
+hmac = bytearray.fromhex(hmac_HEX)
+
+#Comprobamos que el HMAC recibido coincide con el del mensaje cifrado
+hrecv = HMAC.new(k2, mensaje_cifrado, digestmod=SHA256)
+try: 
+	hrecv.verify(hmac)
+	print("El HMAC recibido es correcto")
+except ValueError:
+	print("El HMAC recibido no coincide con el del mensaje recibido")
+	exit(1)
+
+decipher = funciones_aes.iniciarAES_CTR_descifrado(k1, nonce)
+mensaje_descifrado = funciones_aes.descifrarAES_CTR(decipher, mensaje_cifrado).decode("utf-8", "ignore")
+print ("Mensaje recibido: " + mensaje_descifrado)
+if (mensaje_descifrado == "END"):
+	print("Cerrado socket con A")
+	socket.cerrar()
