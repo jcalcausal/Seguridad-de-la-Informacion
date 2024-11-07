@@ -71,8 +71,25 @@ else:
 	exit(1)
 # Paso 5) A->B: KAB(Nombre) en AES-CTR con HMAC
 ###############################################
-
 # (A realizar por el alumno/a...)
+mensaje = "Juan Carlos"
+print("Nombre enviado: " + mensaje)
+cipher, nonce = funciones_aes.iniciarAES_CTR_cifrado(k1)
+mensaje_cifrado = funciones_aes.cifrarAES_CTR(cipher, mensaje.encode('utf-8'))
+
+hsend = HMAC.new(k2, mensaje_cifrado, digestmod=SHA256)
+hmac_enviado= hsend.digest()
+
+msg_AB = []
+msg_AB.append(mensaje_cifrado.hex())
+msg_AB.append(nonce.hex())
+msg_AB.append(hmac_enviado.hex())
+json_AB = json.dumps(msg_AB)
+print("5: Alice envía: A -> B: " + json_AB)
+
+socket = SOCKET_SIMPLE_TCP('127.0.0.1', 5553)
+socket.conectar()
+socket.enviar(json_AB.encode("utf-8"))
 
 # Paso 6) B->A: KAB(Apellido) en AES-CTR con HMAC
 #################################################

@@ -68,8 +68,33 @@ socket.cerrar()
 
 # Paso 5) A->B: KAB(Nombre) en AES-CTR con HMAC
 ###############################################
-
 # (A realizar por el alumno/a...)
+print("Creando conexion con A y esperando su mensaje...")
+socket = SOCKET_SIMPLE_TCP('127.0.0.1', 5553)
+socket.escuchar()
+cifrado = socket.recibir()
+
+json_AB = cifrado.decode("utf-8", "ignore")
+print("5: Bob recibe de Alice: A->B (mensaje cifrado, nonce, hmac): " + json_AB)
+msg_AB = json.loads(json_AB)
+mensaje_cifrado_HEX, nonce_HEX, hmac_HEX = msg_AB
+
+mensaje_cifrado = bytearray.fromhex(mensaje_cifrado_HEX)
+nonce = bytearray.fromhex(nonce_HEX)
+hmac = bytearray.fromhex(hmac_HEX)
+
+#Comprobamos que el HMAC recibido coincide con el del mensaje cifrado
+hrecv = HMAC.new(k2, mensaje_cifrado, digestmod=SHA256)
+try: 
+	hrecv.verify(hmac)
+	print("El HMAC recibido es correcto")
+except ValueError:
+	print("El HMAC recibido no coincide con el del mensaje recibido")
+	exit(1)
+
+decipher = funciones_aes.iniciarAES_CTR_descifrado(k1, nonce)
+mensaje_descifrado = funciones_aes.descifrarAES_CTR(decipher, mensaje_cifrado).decode("utf-8", "ignore")
+print ("Nombre recibido: " + mensaje_descifrado)
 
 # Paso 6) B->A: KAB(Apellido) en AES-CTR con HMAC
 #################################################
