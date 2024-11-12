@@ -2,6 +2,7 @@ import funciones_rsa
 import funciones_aes
 from socket_class import *
 from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad,unpad
 
 bob_key = funciones_rsa.cargar_RSAKey_Privada("bob_key.txt", "Bob")
 alice_pub_key = funciones_rsa.cargar_RSAKey_Publica("alice_pub_key.txt")
@@ -26,8 +27,8 @@ except(ValueError, TypeError):
 #EJERCICIO 2.b
 cipher, IV = funciones_aes.iniciarAES_CTR_cifrado(k1)
 mensaje = "Hola Alice".encode("utf-8")
-cifrado2 = funciones_aes.cifrarAES_CTR(cipher, mensaje)
-firmado2 = funciones_rsa.firmarRSA_PSS(cifrado2, bob_key)
+cifrado2 = funciones_aes.cifrarAES_CTR(cipher, pad(mensaje, 16))
+firmado2 = funciones_rsa.firmarRSA_PSS(mensaje, bob_key)
 socket_servidor.enviar(IV)
 socket_servidor.enviar(cifrado2)
 socket_servidor.enviar(firmado2)
@@ -37,10 +38,11 @@ IV2 = socket_servidor.recibir()
 cifrado3 = socket_servidor.recibir()
 firmado3 = socket_servidor.recibir()
 try:
-	funciones_rsa.comprobarRSA_PSS(cifrado3, firmado3, alice_pub_key)
 	decipher = funciones_aes.iniciarAES_CTR_descifrado(k1, IV2)
-	descifrado = funciones_aes.descifrarAES_CTR(decipher, cifrado3).decode("utf-8")
-	print(descifrado)
+	descifrado = unpad(funciones_aes.descifrarAES_CTR(decipher, cifrado3), 16)
+	mensaje= descifrado.decode("utf-8")
+	funciones_rsa.comprobarRSA_PSS(descifrado, firmado3, alice_pub_key)
+	print(mensaje)
 except(ValueError, TypeError):
 	print("Error al verificar la firma")
 
