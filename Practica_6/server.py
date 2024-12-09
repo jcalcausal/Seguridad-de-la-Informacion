@@ -5,7 +5,8 @@ import ssl
 server_address = ('localhost', 4443)
 httpd = http.server.HTTPServer(server_address, http.server.SimpleHTTPRequestHandler)
 
-# Wrap the socket with the latest TLS encryption (ssl.PROTOCOL_TLS_SERVER para 1.3 y ssl.PROTOCOL_TLSv1_2 para 1.2) and use the server certificate 'server.crt' and its private key 'key.pem'
+# Wrap the socket with TLS encryption (ssl.PROTOCOL_TLS_SERVER para 1.3, que es la más reciente
+#  y ssl.PROTOCOL_TLSv1_2 para 1.2) and use the server certificate 'server.crt' and its private key 'key.pem'
 context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 context.load_cert_chain('Juan_Carlos_Alcausa.crt', 'Juan_Carlos_Alcausa.pem')
 httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
